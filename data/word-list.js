@@ -1,3 +1,4 @@
+// Define word lists directly in the file
 const wordLists = {
     easy: [
         "the", "be", "to", "of", "and", "a", "in", "that", "have", "I", 
