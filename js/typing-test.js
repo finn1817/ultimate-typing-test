@@ -164,6 +164,19 @@ class TypingTest {
     }
     
     generateRandomWords() {
+        // Make sure wordLists is defined and accessible
+        if (typeof wordLists === 'undefined' || !wordLists[this.difficulty]) {
+            // Fallback word list if the external one isn't loaded
+            const fallbackWords = [
+                "the", "be", "to", "of", "and", "a", "in", "that", "have", "I", 
+                "it", "for", "not", "on", "with", "he", "as", "you", "do", "at", 
+                "this", "but", "his", "by", "from", "they", "we", "say", "her", "she"
+            ];
+            this.testWords = fallbackWords.sort(() => Math.random() - 0.5).slice(0, 20);
+            this.testText = this.testWords.join(' ');
+            return;
+        }
+        
         let wordList = [...wordLists[this.difficulty]];
         
         // Add punctuation if enabled
@@ -171,7 +184,8 @@ class TypingTest {
             wordList = wordList.map(word => {
                 // 20% chance to add punctuation
                 if (Math.random() < 0.2) {
-                    const randomPunctuation = punctuationList[Math.floor(Math.random() * punctuationList.length)];
+                    const punctuation = [".", ",", "!", "?", ";", ":"];
+                    const randomPunctuation = punctuation[Math.floor(Math.random() * punctuation.length)];
                     return word + randomPunctuation;
                 }
                 return word;
@@ -204,6 +218,20 @@ class TypingTest {
     }
     
     generateSentences() {
+        // Make sure sentenceLists is defined and accessible
+        if (typeof sentenceLists === 'undefined' || !sentenceLists[this.difficulty]) {
+            // Fallback sentences if the external ones aren't loaded
+            const fallbackSentences = [
+                "The quick brown fox jumps over the lazy dog.",
+                "She sells seashells by the seashore.",
+                "How much wood would a woodchuck chuck if a woodchuck could chuck wood?"
+            ];
+            const randomIndex = Math.floor(Math.random() * fallbackSentences.length);
+            this.testText = fallbackSentences[randomIndex];
+            this.testWords = this.testText.split(' ');
+            return;
+        }
+        
         const sentenceList = sentenceLists[this.difficulty];
         // Shuffle the sentences
         const shuffledSentences = [...sentenceList].sort(() => Math.random() - 0.5);
@@ -219,6 +247,14 @@ class TypingTest {
     }
     
     generateParagraphs() {
+        // Make sure paragraphLists is defined and accessible
+        if (typeof paragraphLists === 'undefined' || !paragraphLists[this.difficulty]) {
+            // Fallback paragraph if the external ones aren't loaded
+            this.testText = "The sun was setting behind the mountains, casting a golden glow over the valley. Birds were returning to their nests, singing their evening songs. A gentle breeze rustled the leaves of the tall oak trees.";
+            this.testWords = this.testText.split(' ');
+            return;
+        }
+        
         const paragraphList = paragraphLists[this.difficulty];
         // Select a random paragraph
         const randomIndex = Math.floor(Math.random() * paragraphList.length);
@@ -228,6 +264,14 @@ class TypingTest {
     }
     
     generateCode() {
+        // Make sure sentenceLists.code is defined and accessible
+        if (typeof sentenceLists === 'undefined' || !sentenceLists.code) {
+            // Fallback code snippet if the external ones aren't loaded
+            this.testText = "function calculateSum(a, b) { return a + b; }";
+            this.testWords = this.testText.split(/\s+/);
+            return;
+        }
+        
         const codeList = sentenceLists.code;
         // Shuffle the code snippets
         const shuffledCode = [...codeList].sort(() => Math.random() - 0.5);
@@ -423,7 +467,9 @@ class TypingTest {
         this.generateErrorAnalysis(result.errorMap);
         
         // Generate keyboard heatmap
-        heatmapGenerator.generateHeatmap(result.errorMap);
+        if (typeof heatmapGenerator !== 'undefined') {
+            heatmapGenerator.generateHeatmap(result.errorMap);
+        }
     }
     
     generateErrorAnalysis(errorMap) {
@@ -558,6 +604,12 @@ class TypingTest {
         
         // Get the canvas element
         const ctx = document.getElementById('progress-chart').getContext('2d');
+        
+        // Check if Chart is defined
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded');
+            return;
+        }
         
         // Destroy previous chart if it exists
         if (window.progressChart) {
@@ -722,6 +774,8 @@ class TypingTest {
     
     displayAchievements(achievements, unlockedAchievements) {
         const container = document.getElementById('achievements-container');
+        if (!container) return;
+        
         container.innerHTML = '';
         
         achievements.forEach(achievement => {
